@@ -19,10 +19,25 @@ PARAM_PATH_UBOOTTOOLS=""
 PARAM_PATH_GENIMAGE=""
 PARAM_PATH_GENIMAGE_CFG=""
 
+IDBLOCK="idblock"
+UBOOT="uboot"
+DTB="dtb"
+LINUX="linux"
+BUSYBOX_ROOTFS="busybox.rootfs.cpio.gz"
+EXTERNAL_ROOTFS="external.rootfs.ext4"
+UBOOT_ENV="uboot.env"
+
 ##CFG READING BLOCK
 ##**************************************************************************
 
+if ! [ ${1} ]; then
+	echo 123
+	exit -1
+fi
+
 DISTR_CFG=${1}
+
+echo ${DISTR_CFG}
 
 if ! [ -e ${DISTR_CFG} ]; then
 	echo "File doesn't exist: ${DISTR_CFG}"
@@ -124,22 +139,25 @@ if ! [ -e ${PARAM_PATH_IDBLOCK} ]; then
 	exit -1
 fi
 
-
 ##**************************************************************************
-WORKING_DIR=`echo ${DISTR_CFG} | cut -d"." -f1`"_tmp"
+WORKING_DIR=`basename ${DISTR_CFG} | cut -d"." -f1`"_tmp"
+
+echo ${WORKING_DIR}
+
 rm -rf ${WORKING_DIR}
+
 mkdir ${WORKING_DIR}
+
 cd ${WORKING_DIR}
 
-cp ${PARAM_PATH_IDBLOCK}				idblock
-cp ${PARAM_PATH_UBOOT}					uboot
-cp ${PARAM_PATH_DTB}					dtb
-cp ${PARAM_PATH_LINUX_KERNEL}			linux
-#cp ${PARAM_PATH_BUSYBOX_ROOTFS}		busybox.rootfs.cpio.gz
-cp ${PARAM_PATH_EXTERNAL_ROOTFS}		external.rootfs.ext4
+cp ${PARAM_PATH_IDBLOCK}				${IDBLOCK}
+cp ${PARAM_PATH_UBOOT}					${UBOOT}
+cp ${PARAM_PATH_DTB}					${DTB}
+cp ${PARAM_PATH_LINUX_KERNEL}			${LINUX}
+cp ${PARAM_PATH_EXTERNAL_ROOTFS}		${EXTERNAL_ROOTFS}
 
-${PARAM_PATH_UBOOTTOOLS}/mkimage -A arm -T ramdisk -C gzip -d ${PARAM_PATH_BUSYBOX_ROOTFS} busybox.rootfs.cpio.gz
-${PARAM_PATH_UBOOTTOOLS}/mkenvimage -s 0x8000 -o uboot.env ${PARAM_PATH_UBOOT_ENV_TXT}
+${PARAM_PATH_UBOOTTOOLS}/mkimage -A arm -T ramdisk -C gzip -d ${PARAM_PATH_BUSYBOX_ROOTFS} ${BUSYBOX_ROOTFS}
+${PARAM_PATH_UBOOTTOOLS}/mkenvimage -s 0x8000 -o ${UBOOT_ENV} ${PARAM_PATH_UBOOT_ENV_TXT}
 
 mountpoint mnt -q
 if [ $? == 0 ]; then
@@ -148,9 +166,10 @@ fi
 sudo rm -rf mnt
 
 mkdir mnt
-sudo mount ./external.rootfs.ext4 mnt
+sudo mount ./${EXTERNAL_ROOTFS} mnt
 if ! [ $? == 0 ]; then
-	exit -3
+	echo "File ${EXTERNAL_ROOTFS} can't be mount to ./mnt directory"
+	exit -1
 fi
 
 sudo cp -rfT ${PARAM_PATH_OVERLAY} mnt/
@@ -158,21 +177,27 @@ sudo cp -rfT ${PARAM_PATH_OVERLAY} mnt/
 sudo cp -rf ${PARAM_PATH_LINUX_MODULES} mnt/lib/modules/
 
 sudo umount mnt
+
 sudo rm -rf mnt
 
 ROOTPATH_TMP="$(mktemp -d)"
 
 rm -rf ${GENIMAGE_TMP}
+
 GENIMAGE_TMP="./genimage.tmp"
+
 ${PARAM_PATH_GENIMAGE} --rootpath ${ROOTPATH_TMP} --tmppath ${GENIMAGE_TMP} --inputpath . --outputpath . --config ${PARAM_PATH_GENIMAGE_CFG}
 rm -rf ${GENIMAGE_TMP}
 
-cd -
+if ! [ $? == 0 ]; then
+	echo "Image can't be created"
+	exit -1
+fi
 
 echo "sudo dd if=${WORKING_DIR}/usd.img of=/dev/sdX status=progress bs=1M"
-
 lsblk
 
+cd -
 # 2. Create binary file uboot.env from uboot.env.txt
 # 3. Create coppy of external rootfs if it is needed regarding execution arguments
 # 4. Modify external rootfs
