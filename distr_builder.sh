@@ -468,48 +468,46 @@ task_create() {
 
 	mkdir ${WORKING_DIR}
 
-	cd ${WORKING_DIR}
+	cp ${PARAM_PATH_IDBLOCK}				${WORKING_DIR}/${IDBLOCK}
+	cp ${PARAM_PATH_UBOOT}					${WORKING_DIR}/${UBOOT}
+	cp ${PARAM_PATH_DTB}					${WORKING_DIR}/${DTB}
+	cp ${PARAM_PATH_LINUX_KERNEL}			${WORKING_DIR}/${LINUX}
+	cp ${PARAM_PATH_EXTERNAL_ROOTFS}		${WORKING_DIR}/${EXTERNAL_ROOTFS}
 
-	cp ${PARAM_PATH_IDBLOCK}				${IDBLOCK}
-	cp ${PARAM_PATH_UBOOT}					${UBOOT}
-	cp ${PARAM_PATH_DTB}					${DTB}
-	cp ${PARAM_PATH_LINUX_KERNEL}			${LINUX}
-	cp ${PARAM_PATH_EXTERNAL_ROOTFS}		${EXTERNAL_ROOTFS}
+	${PARAM_PATH_UBOOTTOOLS}/mkimage -A arm -T ramdisk -C gzip -d ${PARAM_PATH_BUSYBOX_ROOTFS} ${WORKING_DIR}/${BUSYBOX_ROOTFS}  1>/dev/null 2>/dev/null
+	${PARAM_PATH_UBOOTTOOLS}/mkenvimage -s 0x8000 -o ${WORKING_DIR}/${UBOOT_ENV} ${PARAM_PATH_UBOOT_ENV_TXT} 2>/dev/null
 
-	${PARAM_PATH_UBOOTTOOLS}/mkimage -A arm -T ramdisk -C gzip -d ${PARAM_PATH_BUSYBOX_ROOTFS} ${BUSYBOX_ROOTFS}  1>/dev/null 2>/dev/null
-	${PARAM_PATH_UBOOTTOOLS}/mkenvimage -s 0x8000 -o ${UBOOT_ENV} ${PARAM_PATH_UBOOT_ENV_TXT} 2>/dev/null
-
-	mountpoint mnt -q
+	mountpoint ${WORKING_DIR}/mnt -q
 	if [ $? == 0 ]; then
-		sudo umount mnt
+		sudo umount ${WORKING_DIR}/mnt
 	fi
-	sudo rm -rf mnt
+	sudo rm -rf ${WORKING_DIR}/mnt
 
-	mkdir mnt
+	mkdir ${WORKING_DIR}/mnt
 
-	sudo mount ./${EXTERNAL_ROOTFS} mnt
+	sudo mount ${WORKING_DIR}/${EXTERNAL_ROOTFS} ${WORKING_DIR}/mnt
 	if ! [ $? == 0 ]; then
 		echo "File ${EXTERNAL_ROOTFS} can't be mount to ./mnt directory"
 		exit -1
 	fi
 
-	sudo cp -rfT ${PARAM_PATH_OVERLAY} mnt/
+	sudo cp -rfT ${PARAM_PATH_OVERLAY} ${WORKING_DIR}/mnt/
 
-	sudo cp -rf ${PARAM_PATH_LINUX_MODULES} mnt/lib/modules/
+	sudo cp -rf ${PARAM_PATH_LINUX_MODULES} ${WORKING_DIR}/mnt/lib/modules/
 
-	sudo umount mnt
+	sudo umount ${WORKING_DIR}/mnt
 
-	sudo rm -rf mnt
+	sudo rm -rf ${WORKING_DIR}/mnt
 
 	ROOTPATH_TMP="$(mktemp -d)"
 
-	echo "atb-magic" > atb-magic
+	echo "atb-magic" > ${WORKING_DIR}/atb-magic
 
 	rm -rf ${GENIMAGE_TMP}
 
-	GENIMAGE_TMP="./genimage.tmp"
+	GENIMAGE_TMP="${WORKING_DIR}/genimage.tmp"
 
-	${PARAM_PATH_GENIMAGE} --rootpath ${ROOTPATH_TMP} --tmppath ${GENIMAGE_TMP} --inputpath . --outputpath . --config ${PARAM_PATH_GENIMAGE_CFG}
+	${PARAM_PATH_GENIMAGE} --rootpath ${ROOTPATH_TMP} --tmppath ${GENIMAGE_TMP} --inputpath ${WORKING_DIR} --outputpath ${WORKING_DIR} --config ${PARAM_PATH_GENIMAGE_CFG}
 
 	rm -rf ${GENIMAGE_TMP}
 
@@ -518,7 +516,7 @@ task_create() {
 		exit -1
 	fi
 
-	mv "usd.img" "`basename ${CONFIGURATION} | cut -d"." -f1`_usd.img"
+	mv "${WORKING_DIR}/usd.img" "${WORKING_DIR}/`basename ${CONFIGURATION} | cut -d"." -f1`_usd.img"
 
 	echo
 	echo
@@ -527,8 +525,6 @@ task_create() {
 	echo
 
 	lsblk
-
-	cd -
 
 }
 
