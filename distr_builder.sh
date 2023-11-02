@@ -379,7 +379,7 @@ task_create() {
 				echo "Configuration file ${CONFIGURATION} can't be read"
 				exit -1
 			fi
-			WORKING_DIR=`basename ${CONFIGURATION} | cut -d"." -f1`"_tmp"
+			WORKING_DIR=`basename -d ".cfg" ${CONFIGURATION} | cut -d"." -f1`"_tmp"
 		else
 			WORKING_DIR="${CONFIGURATION}_tmp"
 		fi
