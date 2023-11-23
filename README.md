@@ -1,4 +1,4 @@
-distr_builder.sh has the following commands  
+##### distr_builder.sh has the following commands  
 
 `--task create | update`  
 Required parameter which activates one of two available modes: *creation* of image from scratch or *updating* internals of image/block device in relation with give parameters.  
@@ -104,7 +104,7 @@ The following files are generated during buildroot building process:
 `atb-rk3568j-smc-r1.dtb`  
 `rootfs.cpio.gz`  
 
-To create image it needs to do the following steps:  
+##### To create image it needs to do the following steps:  
 1. obtain building system `git clone https://git1.atb-e.ru/cpu_soft/build_systems/distr_builder.git distr_builder`  
 2. go into directory `cd distr_builder`  
 3. obtain buildroot `git clone https://git1.atb-e.ru/cpu_soft/build_systems/atb-buildroot-main.git buildroot`  
@@ -129,15 +129,15 @@ make O=output/atb_rk3568c_mpc_m
 8. create directory `mkdir atb_rk3568j_smc_r1` and go into `cd atb_rk3568j_smc_r1`  
 9. create configuration file `atb_rk3568j_smc_r1_ubuntu18.04_lxde.cfg`  
 10. fill the created configuration file as mentioned earlier  
-11. leave directory `cd ..`
+11. leave directory `cd ..`  
 10. create image `./distr_builder.sh --task create --configuration atb_rk3568j_smc_r1/atb_rk3568j_smc_r1_ubuntu18.04_lxde.cfg`  
 11. write created image into uSD-card `dd if=atb_rk3568j_smc_r1_ubuntu18.04_lxde_tmp/atb_rk3568j_smc_r1_ubuntu18.04_lxde_usd.img of=/dev/sdX status=progress bs=1M`  
 
 
 The following distribution:  
-`ROOTFS_IMG="debian10-lxde.rootfs.ext4"`  
-`ROOTFS_IMG="debian10-xfce4.rootfs.ext4"`  
-`ROOTFS_IMG="ubuntu18.04-lxde.rootfs.ext4`  
-`ROOTFS_IMG="ubuntu20.04-lxqt.rootfs.ext4`  
-`ROOTFS_IMG="ubuntu20.04-minimal.rootfs.ext4`  
+`debian10-lxde.rootfs.ext4"`  
+`debian10-xfce4.rootfs.ext4"`  
+`ubuntu18.04-lxde.rootfs.ext4`  
+`ubuntu20.04-lxqt.rootfs.ext4`  
+`ubuntu20.04-minimal.rootfs.ext4`  
 can be downloaded using the command `wget -T 1 --ftp-user='atbftp_user' --ftp-password='32Vj_hy%c@gR' ftp://ftp.atb-e.ru:2121/ATB_FTP/buildroot/<DISTRIBUTION>`
