@@ -169,28 +169,32 @@ make O=output/atb_rk3588_smc_linux-5.10.160 atb_rk3588_smc_linux-5.10.160_defcon
 make O=output/atb_rk3588_smc_linux-5.10.160
 ```
 
-8. leave directory `cd ..`  
+8. leave directory  
+```
+cd ..
+```
+
 9. create image   
 ```
 ./imagen.sh --task create --configuration atb_rk3568j_mpc_linux-5.10.110_debian12_lxqt/atb_rk3568j_mpc_linux-5.10.110_debian12_lxqt.cfg
 ```
-or
+or  
 ```
 ./imagen.sh --task create --configuration atb_rk3568j_smc_linux-5.10.110_debian12_lxqt/atb_rk3568j_smc_linux-5.10.110_debian12_lxqt.cfg
 ```
-or
+or  
 ```
 ./imagen.sh --task create --configuration atb_rk3568j_smc_r1_linux-5.10.110_debian12_lxqt/atb_rk3568j_smc_r1_linux-5.10.110_debian12_lxqt.cfg
 ```
-or
+or  
 ```
 ./imagen.sh --task create --configuration atb_rk3568_mpc_m1_linux-5.10.110_debian12_lxqt/atb_rk3568_mpc_m1_linux-5.10.110_debian12_lxqt.cfg
 ```
-or
+or  
 ```
 ./imagen.sh --task create --configuration atb_rk3588_mitx_linux-5.10.160_debian12_lxqt/atb_rk3588_mitx_linux-5.10.160_debian12_lxqt.cfg
 ```
-or
+or  
 ```
 ./imagen.sh --task create --configuration atb_rk3588_smc_linux-5.10.160_debian12_lxqt/atb_rk3588_smc_linux-5.10.160_debian12_lxqt.cfg
 ```
@@ -199,23 +203,23 @@ or
 ```
 sudo dd if=atb_rk3568j_mpc_linux-5_tmp/atb_rk3568j_mpc_linux-5_usd.img of=/dev/sdX status=progress bs=1M
 ```
-or
+or  
 ```
 sudo dd if=atb_rk3568j_smc_linux-5_tmp/atb_rk3568j_smc_linux-5_usd.img of=/dev/sdX status=progress bs=1M
 ```
-or
+or  
 ```
 sudo dd if=atb_rk3568j_smc_r1_linux-5_tmp/atb_rk3568j_smc_r1_linux-5_usd.img of=/dev/sdX status=progress bs=1M
 ```
-or
+or  
 ```
 sudo dd if=atb_rk3568_mpc_m1_linux-5_tmp/atb_rk3568_mpc_m1_linux-5_usd.img of=/dev/sdX status=progress bs=1M
 ```
-or
+or  
 ```
 sudo dd if=atb_rk3588_mitx_linux-5_tmp/atb_rk3588_mitx_linux-5_usd.img of=/dev/sdX status=progress bs=1M
 ```
-or
+or  
 ```
 sudo dd if=atb_rk3588_smc_linux-5_tmp/atb_rk3588_smc_linux-5_usd.img of=/dev/sdX status=progress bs=1M
 ```
