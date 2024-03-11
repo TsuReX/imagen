@@ -106,7 +106,7 @@ The following files are generated during buildroot building process:
 ##### To create image it needs to do the following steps:  
 1. obtain building system  
 ```
-git clone https://git1.atb-e.ru/cpu_soft/build_systems/imagen.git  --depth=1 --branch=develop imagen
+git clone https://git1.atb-e.ru/cpu_soft/build_systems/imagen.git  --depth=1 --branch=refactoring imagen
 ```
 
 2. go into directory  
