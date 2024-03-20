@@ -608,72 +608,72 @@ while [[ "$#" -gt 0 ]]; do
 		;;
 
 		"--configuration")
-			CONFIGURATION=${2}
+			CONFIGURATION=`realpath ${2}`
 			shift
 		;;
 
 		"--destination")
-			DESTINATION=${2}
+			DESTINATION=`realpath ${2}`
 			shift
 		;;
 
 		"--linux")
-			PARAM_PATH_LINUX_KERNEL=${2}
+			PARAM_PATH_LINUX_KERNEL=`realpath ${2}`
 			shift
 		;;
 
 		"--linux_modules")
-			PARAM_PATH_LINUX_MODULES=${2}
+			PARAM_PATH_LINUX_MODULES=`realpath ${2}`
 			shift
 		;;
 
 		"--uboot_env_txt")
-			PARAM_PATH_UBOOT_ENV_TXT=${2}
+			PARAM_PATH_UBOOT_ENV_TXT=`realpath ${2}`
 			shift
 		;;
 
 		"--uboot")
-			PARAM_PATH_UBOOT=${2}
+			PARAM_PATH_UBOOT=`realpath ${2}`
 			shift
 		;;
 
 		"--dtb")
-			PARAM_PATH_DTB=${2}
+			PARAM_PATH_DTB=`realpath ${2}`
 			shift
 		;;
 
 		"--idblock")
-			PARAM_PATH_IDBLOCK=${2}
+			PARAM_PATH_IDBLOCK=`realpath ${2}`
 			shift
 		;;
 
 		"--overlay")
-			PARAM_PATH_OVERLAY=${2}
+			PARAM_PATH_OVERLAY=`realpath ${2}`
 			shift
 		;;
 
 		"--busybox_rootfs")
-			PARAM_PATH_BUSYBOX_ROOTFS=${2}
+			PARAM_PATH_BUSYBOX_ROOTFS=`realpath ${2}`
 			shift
 		;;
 
 		"--external_rootfs")
-			PARAM_PATH_EXTERNAL_ROOTFS=${2}
+			PARAM_PATH_EXTERNAL_ROOTFS=`realpath ${2}`
 			shift
 		;;
 
 		"--uboot_tools")
-			PARAM_PATH_UBOOTTOOLS=${2}
+			PARAM_PATH_UBOOTTOOLS=`realpath ${2}`
 			shift
 		;;
 
 		"--genimage")
-			PARAM_PATH_GENIMAGE=${2}
+			PARAM_PATH_GENIMAGE=`realpath ${2}`
 			shift
 		;;
 
 		"--genimage_cfg")
-			PARAM_PATH_GENIMAGE_CFG=${2}
+			PARAM_PATH_GENIMAGE_CFG=`realpath ${2}`
 			shift
 		;;
 
