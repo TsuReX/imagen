@@ -145,11 +145,6 @@ fill_with_data() {
 			exit -1
 		fi
 
-		if ! [ -d ${PARAM_PATH_UBOOTTOOLS} ]; then
-			echo "Directory doesn't exist: ${PARAM_PATH_UBOOTTOOLS}"
-			exit -1
-		fi
-
 		if  [ -f ${DESTINATION} ]; then
 			sudo mount -o loop,offset=16777216 -t auto ${DESTINATION} ${WORKING_DIR}/mnt/part0
 			if ! [ $? == 0 ]; then
@@ -245,11 +240,6 @@ fill_with_data() {
 			exit -1
 		fi
 
-		if ! [ -d ${PARAM_PATH_UBOOTTOOLS} ]; then
-			echo "Directory doesn't exist: ${PARAM_PATH_UBOOTTOOLS}"
-			exit -1
-		fi
-
 		if  [ -f ${DESTINATION} ]; then
 			sudo mount -o loop,offset=16777216 -t auto ${DESTINATION} ${WORKING_DIR}/mnt/part0
 			if ! [ $? == 0 ]; then
@@ -266,7 +256,7 @@ fill_with_data() {
 
 		sudo rm -rf ${WORKING_DIR}/mnt/part0/${BUSYBOX_ROOTFS}
 
-		sudo ${PARAM_PATH_UBOOTTOOLS}/mkimage -A arm -T ramdisk -C gzip -d ${PARAM_PATH_BUSYBOX_ROOTFS} ${WORKING_DIR}/mnt/part0/${BUSYBOX_ROOTFS} 1>/dev/null 2>/dev/null
+		sudo mkimage -A arm -T ramdisk -C gzip -d ${PARAM_PATH_BUSYBOX_ROOTFS} ${WORKING_DIR}/mnt/part0/${BUSYBOX_ROOTFS} 1>/dev/null 2>/dev/null
 		if ! [ $? == 0 ]; then
 			echo "BUSYBOX_ROOTFS can't be updated"
 			exit -1
@@ -372,7 +362,7 @@ task_create() {
 			WORKING_DIR="${CONFIGURATION}_tmp"
 		fi
 	else
-		echo "Imvalid configuration"
+		echo "Invalid configuration"
 	fi
 
 	echo "PARAM_PATH_IDBLOCK: ${PARAM_PATH_IDBLOCK}"
@@ -431,38 +421,35 @@ task_create() {
 		exit -1
 	fi
 
-	if ! [ -d ${PARAM_PATH_UBOOTTOOLS} ]; then
-		echo "Directory doesn't exist: ${PARAM_PATH_UBOOTTOOLS}"
-		exit -1
-	fi
-
 	if ! [ -f ${PARAM_PATH_GENIMAGE_CFG} ]; then
 		echo "File doesn't exist: ${PARAM_PATH_GENIMAGE_CFG}"
 		exit -1
 	fi
 
-	if ! [ -f ${PARAM_PATH_GENIMAGE} ]; then
-		echo "File doesn't exist: ${PARAM_PATH_GENIMAGE}"
-		exit -1
-	fi
-
 	##**************************************************************************
 
-	echo ${WORKING_DIR}
+	echo
+	echo "Working directory is ${WORKING_DIR}"
 
+	echo "Cleaning working directory"
 	rm -rf ${WORKING_DIR}
 
 	mkdir ${WORKING_DIR}
 
+	echo "Copying binaries into working directory"
 	cp ${PARAM_PATH_IDBLOCK}				${WORKING_DIR}/${IDBLOCK}
 	cp ${PARAM_PATH_UBOOT}					${WORKING_DIR}/${UBOOT}
 	cp ${PARAM_PATH_DTB}					${WORKING_DIR}/${DTB}
 	cp ${PARAM_PATH_LINUX_KERNEL}			${WORKING_DIR}/${LINUX}
 	cp ${PARAM_PATH_EXTERNAL_ROOTFS}		${WORKING_DIR}/${EXTERNAL_ROOTFS}
 
-	${PARAM_PATH_UBOOTTOOLS}/mkimage -A arm -T ramdisk -C gzip -d ${PARAM_PATH_BUSYBOX_ROOTFS} ${WORKING_DIR}/${BUSYBOX_ROOTFS}  1>/dev/null 2>/dev/null
+	echo "Making busybox rootfs image"
+	mkimage -A arm -T ramdisk -C gzip -d ${PARAM_PATH_BUSYBOX_ROOTFS} ${WORKING_DIR}/${BUSYBOX_ROOTFS}  1>/dev/null 2>/dev/null
+
+	echo "Making u-boot environmet image"
 	mkenvimage -s 0x8000 -o ${WORKING_DIR}/${UBOOT_ENV} ${PARAM_PATH_UBOOT_ENV_TXT} 2>/dev/null
 
+	echo "Preparing extternal rootfs"
 	mountpoint ${WORKING_DIR}/mnt -q
 	if [ $? == 0 ]; then
 		sudo umount ${WORKING_DIR}/mnt
@@ -477,8 +464,10 @@ task_create() {
 		exit -1
 	fi
 
+	echo "Copying overlay into external rootfs"
 	sudo cp -rfT ${PARAM_PATH_OVERLAY} ${WORKING_DIR}/mnt/
 
+	echo "Copying linux kernel modules into external rootfs"
 	sudo cp -rf ${PARAM_PATH_LINUX_MODULES} ${WORKING_DIR}/mnt/lib/modules/
 
 	sudo umount ${WORKING_DIR}/mnt
@@ -487,13 +476,14 @@ task_create() {
 
 	ROOTPATH_TMP="$(mktemp -d)"
 
+	echo "Making magic section for resulting image"
 	echo "atb-magic" > ${WORKING_DIR}/atb-magic
 
 	rm -rf ${GENIMAGE_TMP}
 
 	GENIMAGE_TMP="${WORKING_DIR}/genimage.tmp"
 
-	#${PARAM_PATH_GENIMAGE} --rootpath ${ROOTPATH_TMP} --tmppath ${GENIMAGE_TMP} --inputpath ${WORKING_DIR} --outputpath ${WORKING_DIR} --config ${PARAM_PATH_GENIMAGE_CFG}
+	echo "Making resulting image"
 	genimage --rootpath ${ROOTPATH_TMP} --tmppath ${GENIMAGE_TMP} --inputpath ${WORKING_DIR} --outputpath ${WORKING_DIR} --config ${PARAM_PATH_GENIMAGE_CFG}
 
 	rm -rf ${GENIMAGE_TMP}
@@ -510,7 +500,8 @@ task_create() {
 	echo "		sudo dd if=${WORKING_DIR}/`basename ${CONFIGURATION} | cut -d"." -f1`_usd.img of=/dev/sdX status=progress bs=1M"
 	echo
 	echo
-
+	echo "Currently host system has the following block devices which could be used for writing image."
+	echo
 	lsblk
 
 }
@@ -667,11 +658,13 @@ echo "DESTINATION: ${DESTINATION}"
 
 case ${TASK} in
 	"create")
+		echo
 		echo "Creation was activated"
 		task_create
 	;;
 
 	"update")
+		echo
 		echo "Updating was activated"
 		task_update
 	;;
