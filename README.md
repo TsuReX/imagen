@@ -8,7 +8,7 @@ Required parameter in case of creation mode. The parameter specifies path to a c
 The configuration file can consist of the following set of parameters:  
 ```
 PARAM_PATH_IDBLOCK				buildroot/output/atb_rk3568j_smc_r1_linux-5.10.110/images/idblock.bin
-PARAM_PATH_UBOOT				buildroot/output/atb_rk3568j_smc_r1_linux-5.10.110/images/uboot.img
+PARAM_PATH_UBOOT				buildroot/output/atb_rk3568j_smc_r1_linux-5.10.110/images/u-boot.itb
 PARAM_PATH_UBOOT_ENV_TXT		uboot.env.txt
 PARAM_PATH_LINUX_KERNEL			buildroot/output/atb_rk3568j_smc_r1_linux-5.10.110/images/Image
 PARAM_PATH_DTB					buildroot/output/atb_rk3568j_smc_r1_linux-5.10.110/images/atb-rk3568j-smc-r1.dtb
@@ -88,7 +88,7 @@ Absolute pathes are required.
 
 The following files are generated during buildroot building process:  
 `idblock.bin`  
-`uboot.img`  
+`u-boot.itb`  
 `Image`  
 `atb-rk3568j-smc-r1.dtb`  
 `rootfs.cpio.gz`  
