@@ -19,8 +19,6 @@ PARAM_PATH_BUSYBOX_ROOTFS=""
 PARAM_PATH_EXTERNAL_ROOTFS=""
 PARAM_PATH_OVERLAY=""
 PARAM_PATH_LINUX_MODULES=""
-PARAM_PATH_UBOOTTOOLS=""
-PARAM_PATH_GENIMAGE=""
 PARAM_PATH_GENIMAGE_CFG=""
 
 IDBLOCK="idblock"
@@ -85,16 +83,6 @@ read_configuration() {
 		"PARAM_PATH_LINUX_MODULES")
 			VAR=${value[1]}
 			: ${PARAM_PATH_LINUX_MODULES:=$VAR}
-			;;
-
-		"PARAM_PATH_UBOOTTOOLS")
-			VAR=${value[1]}
-			: ${PARAM_PATH_UBOOTTOOLS:=$VAR}
-			;;
-
-		"PARAM_PATH_GENIMAGE")
-			VAR=${value[1]}
-			: ${PARAM_PATH_GENIMAGE:=$VAR}
 			;;
 
 		"PARAM_PATH_GENIMAGE_CFG")
@@ -176,7 +164,7 @@ fill_with_data() {
 			fi
 		fi
 
-		sudo ${PARAM_PATH_UBOOTTOOLS}/mkenvimage -s 0x8000 -o ${WORKING_DIR}/mnt/part0/${UBOOT_ENV} ${PARAM_PATH_UBOOT_ENV_TXT}
+		sudo mkenvimage -s 0x8000 -o ${WORKING_DIR}/mnt/part0/${UBOOT_ENV} ${PARAM_PATH_UBOOT_ENV_TXT}
 		if ! [ $? == 0 ]; then
 			echo "UBOOT_ENV_TXT can't be updated"
 			exit -1
@@ -396,9 +384,7 @@ task_create() {
 	echo "PARAM_PATH_EXTERNAL_ROOTFS: ${PARAM_PATH_EXTERNAL_ROOTFS}"
 	echo "PARAM_PATH_OVERLAY: ${PARAM_PATH_OVERLAY}"
 	echo "PARAM_PATH_LINUX_MODULES: ${PARAM_PATH_LINUX_MODULES}"
-	echo "PARAM_PATH_UBOOTTOOLS: ${PARAM_PATH_UBOOTTOOLS}"
 	echo "PARAM_PATH_GENIMAGE_CFG: ${PARAM_PATH_GENIMAGE_CFG}"
-	echo "PARAM_PATH_GENIMAGE: ${PARAM_PATH_GENIMAGE}"
 
 	if ! [ -f ${PARAM_PATH_IDBLOCK} ]; then
 		echo "File doesn't exist: ${PARAM_PATH_IDBLOCK}"
@@ -475,7 +461,7 @@ task_create() {
 	cp ${PARAM_PATH_EXTERNAL_ROOTFS}		${WORKING_DIR}/${EXTERNAL_ROOTFS}
 
 	${PARAM_PATH_UBOOTTOOLS}/mkimage -A arm -T ramdisk -C gzip -d ${PARAM_PATH_BUSYBOX_ROOTFS} ${WORKING_DIR}/${BUSYBOX_ROOTFS}  1>/dev/null 2>/dev/null
-	${PARAM_PATH_UBOOTTOOLS}/mkenvimage -s 0x8000 -o ${WORKING_DIR}/${UBOOT_ENV} ${PARAM_PATH_UBOOT_ENV_TXT} 2>/dev/null
+	mkenvimage -s 0x8000 -o ${WORKING_DIR}/${UBOOT_ENV} ${PARAM_PATH_UBOOT_ENV_TXT} 2>/dev/null
 
 	mountpoint ${WORKING_DIR}/mnt -q
 	if [ $? == 0 ]; then
@@ -507,7 +493,8 @@ task_create() {
 
 	GENIMAGE_TMP="${WORKING_DIR}/genimage.tmp"
 
-	${PARAM_PATH_GENIMAGE} --rootpath ${ROOTPATH_TMP} --tmppath ${GENIMAGE_TMP} --inputpath ${WORKING_DIR} --outputpath ${WORKING_DIR} --config ${PARAM_PATH_GENIMAGE_CFG}
+	#${PARAM_PATH_GENIMAGE} --rootpath ${ROOTPATH_TMP} --tmppath ${GENIMAGE_TMP} --inputpath ${WORKING_DIR} --outputpath ${WORKING_DIR} --config ${PARAM_PATH_GENIMAGE_CFG}
+	genimage --rootpath ${ROOTPATH_TMP} --tmppath ${GENIMAGE_TMP} --inputpath ${WORKING_DIR} --outputpath ${WORKING_DIR} --config ${PARAM_PATH_GENIMAGE_CFG}
 
 	rm -rf ${GENIMAGE_TMP}
 
@@ -545,9 +532,7 @@ task_update() {
 	echo "PARAM_PATH_EXTERNAL_ROOTFS: ${PARAM_PATH_EXTERNAL_ROOTFS}"
 	echo "PARAM_PATH_OVERLAY: ${PARAM_PATH_OVERLAY}"
 	echo "PARAM_PATH_LINUX_MODULES: ${PARAM_PATH_LINUX_MODULES}"
-	echo "PARAM_PATH_UBOOTTOOLS: ${PARAM_PATH_UBOOTTOOLS}"
 	echo "PARAM_PATH_GENIMAGE_CFG: ${PARAM_PATH_GENIMAGE_CFG}"
-	echo "PARAM_PATH_GENIMAGE: ${PARAM_PATH_GENIMAGE}"
 
 	if ! [ ${DESTINATION} ]; then
 		echo "Destination file is empty"
@@ -659,16 +644,6 @@ while [[ "$#" -gt 0 ]]; do
 
 		"--external_rootfs")
 			PARAM_PATH_EXTERNAL_ROOTFS=`realpath ${2}`
-			shift
-		;;
-
-		"--uboot_tools")
-			PARAM_PATH_UBOOTTOOLS=`realpath ${2}`
-			shift
-		;;
-
-		"--genimage")
-			PARAM_PATH_GENIMAGE=`realpath ${2}`
 			shift
 		;;
 
