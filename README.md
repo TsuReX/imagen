@@ -58,12 +58,12 @@ Parameter specifies path to a configuration file for genimage utility which desc
 
 Create image from scratch using configuration file.  
 ```bash
-./imagen.sh --task create --configuration ./path/atb_rk3568j_smc_r1_ubuntu_minimal.cfg
+./imagen.sh --task create --configuration ./path/atb_rk3568j_smc_r1_linux-5.10.110_debian12_minimal.cfg
 ```
 
 Update existing image using configuration file and using block device as a source for modification.  
 ```bash
-./imagen.sh --task update --configuration ./path/atb_rk3568j_smc_r1_ubuntu_minimal.cfg --destination /dev/mmcblk1
+./imagen.sh --task update --configuration ./path/atb_rk3568j_smc_r1_linux-5.10.110_debian12_minimal.cfg --destination /dev/mmcblk1
 ```
 
 Update existing image using certain parameters and using block device as a source for modification.  
@@ -79,7 +79,7 @@ Update existing image using certain parameters and using image file as a source 
 Update existing image using configuration file and certain parameters and using block device as a source for modification.  
 In this case parameters `--overlay` and `--linux_modules` override the same parameters in configuration file.  
 ```bash
-./imagen.sh --task update --configuration ./path/atb_rk3568j_smc_r1_ubuntu_minimal.cfg --destination /dev/mmcblk1 --overlay ./path/overlay --linux_modules ./path/lib/modules
+./imagen.sh --task update --configuration ./path/atb_rk3568j_smc_r1_linux-5.10.110_debian12_minimal.cfg --destination /dev/mmcblk1 --overlay ./path/overlay --linux_modules ./path/lib/modules
 ```
 
 For creating image from scratch all of these parameters are required.  
