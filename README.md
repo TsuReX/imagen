@@ -16,7 +16,6 @@ PARAM_PATH_BUSYBOX_ROOTFS		buildroot/output/atb_rk3568j_smc_r1_linux-5.10.110/im
 PARAM_PATH_EXTERNAL_ROOTFS		../dl/debian_12_lxqt_arm64_ext4.img
 PARAM_PATH_OVERLAY 				atb_rk3568j_smc_r1_linux-5.10.110_debian12_lxqt/overlay
 PARAM_PATH_LINUX_MODULES		buildroot/output/atb_rk3568j_smc_r1_linux-5.10.110/target/lib/modules
-PARAM_PATH_UBOOTTOOLS 			buildroot/output/atb_rk3568j_smc_r1_linux-5.10.110/build/uboot-ok_r1/tools
 PARAM_PATH_GENIMAGE_CFG			distr_image.cfg
 ```
 Parameter `PARAM_PATH_LINUX_MODULES` is an absolute path to `/lib/modules` directory being created during deploying buildroot rootfs and consists of linux kernel modules.  
