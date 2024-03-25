@@ -7,7 +7,7 @@ Required parameter which activates one of two available modes: *creation* of ima
 Required parameter in case of creation mode. The parameter specifies path to a configuration file.  
 The configuration file can consist of the following set of parameters:  
 ```
-PARAM_PATH_IDBLOCK				buildroot/output/atb_rk3568j_smc_r1_linux-5.10.110/images/idblock.bin
+PARAM_PATH_IDBLOCK				buildroot/output/atb_rk3568j_smc_r1_linux-5.10.110/images/idbloader.img
 PARAM_PATH_UBOOT				buildroot/output/atb_rk3568j_smc_r1_linux-5.10.110/images/u-boot.itb
 PARAM_PATH_UBOOT_ENV_TXT		uboot.env.txt
 PARAM_PATH_LINUX_KERNEL			buildroot/output/atb_rk3568j_smc_r1_linux-5.10.110/images/Image
@@ -73,7 +73,7 @@ Update existing image using certain parameters and using block device as a sourc
 
 Update existing image using certain parameters and using image file as a source for modification.  
 ```bash
-./imagen.sh --task update --idblock ./path/idblock.bin --uboot ./path/uboot --destination ./path/usd.img
+./imagen.sh --task update --idblock ./path/idbloader.img --uboot ./path/uboot --destination ./path/usd.img
 ```
 
 Update existing image using configuration file and certain parameters and using block device as a source for modification.  
@@ -87,7 +87,7 @@ For updating only certain parameters are required. It depends on a purpose of up
 Absolute pathes are required.  
 
 The following files are generated during buildroot building process:  
-`idblock.bin`  
+`idbloader.img`  
 `u-boot.itb`  
 `Image`  
 `atb-rk3568j-smc-r1.dtb`  
