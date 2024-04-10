@@ -468,7 +468,7 @@ create_full_image() {
 		exit -1
 	fi
 
-	mv "${WORKING_DIR}/spi.img" "${WORKING_DIR}/`basename ${CONFIGURATION} | cut -d"." -f1`_usd.img"
+	mv "${WORKING_DIR}/usd.img" "${WORKING_DIR}/`basename ${CONFIGURATION} | cut -d"." -f1`_usd.img"
 
 	echo
 	echo
@@ -559,10 +559,23 @@ task_create() {
 	fi
 
 	##**************************************************************************
+	case ${IMAGE_TYPE} in
+		"spi")
+			echo
+			echo "Creation was activated"
+			create_spi_image ${WORKING_DIR} ${CONFIGURATION}
+		;;
 
-	create_spi_image ${WORKING_DIR} ${CONFIGURATION}
-	
-#	create_full_image  ${WORKING_DIR} ${CONFIGURATION}
+		"full")
+			echo
+			echo "Updating was activated"
+			create_full_image  ${WORKING_DIR} ${CONFIGURATION}
+		;;
+
+		*)
+			echo "Unknown image type: ${IMAGE_TYPE}"
+			exit -1
+	esac
 
 }
 
@@ -643,6 +656,11 @@ while [[ "$#" -gt 0 ]]; do
 			shift 
 		;;
 
+		"--image_type")
+			IMAGE_TYPE=${2}
+			shift 
+		;;
+
 		"--configuration")
 			CONFIGURATION=`realpath ${2}`
 			shift
@@ -713,6 +731,7 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 echo "TASK: ${TASK}"
+echo "IMAGE_TYPE: ${IMAGE_TYPE}"
 echo "CONFIGURATION: ${CONFIGURATION}"
 echo "DESTINATION: ${DESTINATION}"
 
