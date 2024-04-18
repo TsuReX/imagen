@@ -55,10 +55,12 @@ Parameter specifies path to a root file system for example ubuntu/debian e.t.c..
 `--genimage_cfg <path>`  
 Parameter specifies path to a configuration file for genimage utility which describes structure of final image. The parameter overrides related one in configuration file if it is specified.  
 
+`--image_type full | spi`  
+Parameter specifies what type of image will be generated: full - image for emmc or sd; spi - image for spi nor.  
 
 Create image from scratch using configuration file.  
 ```bash
-./imagen.sh --task create --configuration ./path/atb_rk3568j_smc_r1_linux-5.10.110_debian12_minimal.cfg
+./imagen.sh --task create --configuration ./path/atb_rk3568j_smc_r1_linux-5.10.110_debian12_minimal.cfg --image_type full
 ```
 
 Update existing image using configuration file and using block device as a source for modification.  
@@ -86,7 +88,7 @@ For creating image from scratch all of these parameters are required.
 For updating only certain parameters are required. It depends on a purpose of updating.  
 Absolute pathes are required.  
 
-The following files are generated during buildroot building process:  
+The following files are generated during buildroot building process for ATB-RK3568J-SMC-R1 board:  
 `idbloader.img`  
 `u-boot.itb`  
 `Image`  
@@ -106,7 +108,7 @@ sudo make install
 ```
 
 
-##### To create image it needs to do the following steps:  
+##### To create image for ATB-RK3568J-SMC-R1 board it needs to do the following steps:  
 1. obtain building system  
 ```
 git clone https://git1.atb-e.ru/cpu_soft/build_systems/imagen.git  --depth=1 --branch=refactoring imagen
@@ -143,33 +145,8 @@ ln -s ../dl dl
 
 7. configure and build base image  
 ```
-make O=output/atb_rk3568j_mpc_linux-5.10.110 atb_rk3568j_mpc_linux-5.10.110_defconfig
-make O=output/atb_rk3568j_mpc_linux-5.10.110
-```
-or
-```
-make O=output/atb_rk3568j_smc_linux-5.10.110 atb_rk3568j_smc_linux-5.10.110_defconfig
-make O=output/atb_rk3568j_smc_linux-5.10.110
-```
-or
-```
 make O=output/atb_rk3568j_smc_r1_linux-5.10.110 atb_rk3568j_smc_r1_linux-5.10.110_defconfig
 make O=output/atb_rk3568j_smc_r1_linux-5.10.110
-```
-or
-```
-make O=output/atb_rk3568_mpc_m1_linux-5.10.110 atb_rk3568_mpc_m1_linux-5.10.110_defconfig
-make O=output/atb_rk3568_mpc_m1_linux-5.10.110
-```
-or
-```
-make O=output/atb_rk3588_mitx_linux-5.10.160 atb_rk3588_mitx_linux-5.10.160_defconfig
-make O=output/atb_rk3588_mitx_linux-5.10.160
-```
-or
-```
-make O=output/atb_rk3588_smc_linux-5.10.160 atb_rk3588_smc_linux-5.10.160_defconfig
-make O=output/atb_rk3588_smc_linux-5.10.160
 ```
 
 8. leave directory  
@@ -179,50 +156,5 @@ cd ..
 
 9. create image   
 ```
-./imagen.sh --task create --configuration atb_rk3568j_mpc_linux-5.10.110_debian12_lxqt/atb_rk3568j_mpc_linux-5.10.110_debian12_lxqt.cfg
-```
-or  
-```
-./imagen.sh --task create --configuration atb_rk3568j_smc_linux-5.10.110_debian12_lxqt/atb_rk3568j_smc_linux-5.10.110_debian12_lxqt.cfg
-```
-or  
-```
-./imagen.sh --task create --configuration atb_rk3568j_smc_r1_linux-5.10.110_debian12_lxqt/atb_rk3568j_smc_r1_linux-5.10.110_debian12_lxqt.cfg
-```
-or  
-```
-./imagen.sh --task create --configuration atb_rk3568_mpc_m1_linux-5.10.110_debian12_lxqt/atb_rk3568_mpc_m1_linux-5.10.110_debian12_lxqt.cfg
-```
-or  
-```
-./imagen.sh --task create --configuration atb_rk3588_mitx_linux-5.10.160_debian12_lxqt/atb_rk3588_mitx_linux-5.10.160_debian12_lxqt.cfg
-```
-or  
-```
-./imagen.sh --task create --configuration atb_rk3588_smc_linux-5.10.160_debian12_lxqt/atb_rk3588_smc_linux-5.10.160_debian12_lxqt.cfg
-```
-
-10. write created image into uSD-card  
-```
-sudo dd if=atb_rk3568j_mpc_linux-5_tmp/atb_rk3568j_mpc_linux-5_usd.img of=/dev/sdX status=progress bs=1M
-```
-or  
-```
-sudo dd if=atb_rk3568j_smc_linux-5_tmp/atb_rk3568j_smc_linux-5_usd.img of=/dev/sdX status=progress bs=1M
-```
-or  
-```
 sudo dd if=atb_rk3568j_smc_r1_linux-5_tmp/atb_rk3568j_smc_r1_linux-5_usd.img of=/dev/sdX status=progress bs=1M
-```
-or  
-```
-sudo dd if=atb_rk3568_mpc_m1_linux-5_tmp/atb_rk3568_mpc_m1_linux-5_usd.img of=/dev/sdX status=progress bs=1M
-```
-or  
-```
-sudo dd if=atb_rk3588_mitx_linux-5_tmp/atb_rk3588_mitx_linux-5_usd.img of=/dev/sdX status=progress bs=1M
-```
-or  
-```
-sudo dd if=atb_rk3588_smc_linux-5_tmp/atb_rk3588_smc_linux-5_usd.img of=/dev/sdX status=progress bs=1M
 ```

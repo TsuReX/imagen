@@ -348,6 +348,138 @@ fill_with_data() {
 
 }
 
+create_spi_image() {
+
+	WORKING_DIR=${1}
+
+	CONFIGURATION=${2}
+
+	echo
+	echo "Working directory is ${WORKING_DIR}"
+
+	echo "Cleaning working directory"
+	rm -rf ${WORKING_DIR}
+
+	mkdir ${WORKING_DIR}
+
+	echo "Copying binaries into working directory"
+	cp ${PARAM_PATH_IDBLOCK}				${WORKING_DIR}/${IDBLOCK}
+	cp ${PARAM_PATH_UBOOT}					${WORKING_DIR}/${UBOOT}
+	cp ${PARAM_PATH_DTB}					${WORKING_DIR}/${DTB}
+
+	echo "Making u-boot environmet image"
+	mkenvimage -s 0x8000 -o ${WORKING_DIR}/${UBOOT_ENV} ${PARAM_PATH_UBOOT_ENV_TXT} 2>/dev/null
+
+	echo "Making magic section for resulting image"
+	echo "atb-magic" > ${WORKING_DIR}/atb-magic
+
+	rm -rf ${GENIMAGE_TMP}
+	
+	ROOTPATH_TMP="$(mktemp -d)"
+	GENIMAGE_TMP="${WORKING_DIR}/genimage.tmp"
+
+
+	echo "Making resulting image"
+	genimage --rootpath ${ROOTPATH_TMP} --tmppath ${GENIMAGE_TMP} --inputpath ${WORKING_DIR} --outputpath ${WORKING_DIR} --config ${PARAM_PATH_GENIMAGE_CFG}
+
+	rm -rf ${GENIMAGE_TMP}
+
+	if ! [ $? == 0 ]; then
+		echo "Image can't be created"
+		exit -1
+	fi
+
+	mv "${WORKING_DIR}/spi.img" "${WORKING_DIR}/`basename ${CONFIGURATION} | cut -d"." -f1`_spi.img"
+
+	echo
+	echo
+	echo "		sudo dd if=${WORKING_DIR}/`basename ${CONFIGURATION} | cut -d"." -f1`_spi.img of=/dev/sdX status=progress bs=1M"
+	echo
+	echo
+	echo "Currently host system has the following block devices which could be used for writing image."
+	echo
+	lsblk
+}
+
+create_full_image() {
+
+	echo
+	echo "Working directory is ${WORKING_DIR}"
+
+	echo "Cleaning working directory"
+	rm -rf ${WORKING_DIR}
+
+	mkdir ${WORKING_DIR}
+
+	echo "Copying binaries into working directory"
+	cp ${PARAM_PATH_IDBLOCK}				${WORKING_DIR}/${IDBLOCK}
+	cp ${PARAM_PATH_UBOOT}					${WORKING_DIR}/${UBOOT}
+	cp ${PARAM_PATH_DTB}					${WORKING_DIR}/${DTB}
+	cp ${PARAM_PATH_LINUX_KERNEL}			${WORKING_DIR}/${LINUX}
+	cp ${PARAM_PATH_EXTERNAL_ROOTFS}		${WORKING_DIR}/${EXTERNAL_ROOTFS}
+
+	echo "Making busybox rootfs image"
+	mkimage -A arm -T ramdisk -C gzip -d ${PARAM_PATH_BUSYBOX_ROOTFS} ${WORKING_DIR}/${BUSYBOX_ROOTFS}  1>/dev/null 2>/dev/null
+
+	echo "Making u-boot environmet image"
+	mkenvimage -s 0x8000 -o ${WORKING_DIR}/${UBOOT_ENV} ${PARAM_PATH_UBOOT_ENV_TXT} 2>/dev/null
+
+	echo "Preparing extternal rootfs"
+	mountpoint ${WORKING_DIR}/mnt -q
+	if [ $? == 0 ]; then
+		sudo umount ${WORKING_DIR}/mnt
+	fi
+	sudo rm -rf ${WORKING_DIR}/mnt
+
+	mkdir ${WORKING_DIR}/mnt
+
+	sudo mount ${WORKING_DIR}/${EXTERNAL_ROOTFS} ${WORKING_DIR}/mnt
+	if ! [ $? == 0 ]; then
+		echo "File ${EXTERNAL_ROOTFS} can't be mount to ./mnt directory"
+		exit -1
+	fi
+
+	echo "Copying overlay into external rootfs"
+	sudo cp -rfT ${PARAM_PATH_OVERLAY} ${WORKING_DIR}/mnt/
+
+	echo "Copying linux kernel modules into external rootfs"
+	sudo cp -rf ${PARAM_PATH_LINUX_MODULES} ${WORKING_DIR}/mnt/lib/modules/
+
+	sudo umount ${WORKING_DIR}/mnt
+
+	sudo rm -rf ${WORKING_DIR}/mnt
+
+	ROOTPATH_TMP="$(mktemp -d)"
+
+	echo "Making magic section for resulting image"
+	echo "atb-magic" > ${WORKING_DIR}/atb-magic
+
+	rm -rf ${GENIMAGE_TMP}
+
+	GENIMAGE_TMP="${WORKING_DIR}/genimage.tmp"
+
+	echo "Making resulting image"
+	genimage --rootpath ${ROOTPATH_TMP} --tmppath ${GENIMAGE_TMP} --inputpath ${WORKING_DIR} --outputpath ${WORKING_DIR} --config ${PARAM_PATH_GENIMAGE_CFG}
+
+	rm -rf ${GENIMAGE_TMP}
+
+	if ! [ $? == 0 ]; then
+		echo "Image can't be created"
+		exit -1
+	fi
+
+	mv "${WORKING_DIR}/usd.img" "${WORKING_DIR}/`basename ${CONFIGURATION} | cut -d"." -f1`_usd.img"
+
+	echo
+	echo
+	echo "		sudo dd if=${WORKING_DIR}/`basename ${CONFIGURATION} | cut -d"." -f1`_usd.img of=/dev/sdX status=progress bs=1M"
+	echo
+	echo
+	echo "Currently host system has the following block devices which could be used for writing image."
+	echo
+	lsblk
+}
+
 task_create() {
 
 	if [ ${CONFIGURATION} ]; then
@@ -427,82 +559,23 @@ task_create() {
 	fi
 
 	##**************************************************************************
+	case ${IMAGE_TYPE} in
+		"spi")
+			echo
+			echo "Creation was activated"
+			create_spi_image ${WORKING_DIR} ${CONFIGURATION}
+		;;
 
-	echo
-	echo "Working directory is ${WORKING_DIR}"
+		"full")
+			echo
+			echo "Updating was activated"
+			create_full_image  ${WORKING_DIR} ${CONFIGURATION}
+		;;
 
-	echo "Cleaning working directory"
-	rm -rf ${WORKING_DIR}
-
-	mkdir ${WORKING_DIR}
-
-	echo "Copying binaries into working directory"
-	cp ${PARAM_PATH_IDBLOCK}				${WORKING_DIR}/${IDBLOCK}
-	cp ${PARAM_PATH_UBOOT}					${WORKING_DIR}/${UBOOT}
-	cp ${PARAM_PATH_DTB}					${WORKING_DIR}/${DTB}
-	cp ${PARAM_PATH_LINUX_KERNEL}			${WORKING_DIR}/${LINUX}
-	cp ${PARAM_PATH_EXTERNAL_ROOTFS}		${WORKING_DIR}/${EXTERNAL_ROOTFS}
-
-	echo "Making busybox rootfs image"
-	mkimage -A arm -T ramdisk -C gzip -d ${PARAM_PATH_BUSYBOX_ROOTFS} ${WORKING_DIR}/${BUSYBOX_ROOTFS}  1>/dev/null 2>/dev/null
-
-	echo "Making u-boot environmet image"
-	mkenvimage -s 0x8000 -o ${WORKING_DIR}/${UBOOT_ENV} ${PARAM_PATH_UBOOT_ENV_TXT} 2>/dev/null
-
-	echo "Preparing extternal rootfs"
-	mountpoint ${WORKING_DIR}/mnt -q
-	if [ $? == 0 ]; then
-		sudo umount ${WORKING_DIR}/mnt
-	fi
-	sudo rm -rf ${WORKING_DIR}/mnt
-
-	mkdir ${WORKING_DIR}/mnt
-
-	sudo mount ${WORKING_DIR}/${EXTERNAL_ROOTFS} ${WORKING_DIR}/mnt
-	if ! [ $? == 0 ]; then
-		echo "File ${EXTERNAL_ROOTFS} can't be mount to ./mnt directory"
-		exit -1
-	fi
-
-	echo "Copying overlay into external rootfs"
-	sudo cp -rfT ${PARAM_PATH_OVERLAY} ${WORKING_DIR}/mnt/
-
-	echo "Copying linux kernel modules into external rootfs"
-	sudo cp -rf ${PARAM_PATH_LINUX_MODULES} ${WORKING_DIR}/mnt/lib/modules/
-
-	sudo umount ${WORKING_DIR}/mnt
-
-	sudo rm -rf ${WORKING_DIR}/mnt
-
-	ROOTPATH_TMP="$(mktemp -d)"
-
-	echo "Making magic section for resulting image"
-	echo "atb-magic" > ${WORKING_DIR}/atb-magic
-
-	rm -rf ${GENIMAGE_TMP}
-
-	GENIMAGE_TMP="${WORKING_DIR}/genimage.tmp"
-
-	echo "Making resulting image"
-	genimage --rootpath ${ROOTPATH_TMP} --tmppath ${GENIMAGE_TMP} --inputpath ${WORKING_DIR} --outputpath ${WORKING_DIR} --config ${PARAM_PATH_GENIMAGE_CFG}
-
-	rm -rf ${GENIMAGE_TMP}
-
-	if ! [ $? == 0 ]; then
-		echo "Image can't be created"
-		exit -1
-	fi
-
-	mv "${WORKING_DIR}/usd.img" "${WORKING_DIR}/`basename ${CONFIGURATION} | cut -d"." -f1`_usd.img"
-
-	echo
-	echo
-	echo "		sudo dd if=${WORKING_DIR}/`basename ${CONFIGURATION} | cut -d"." -f1`_usd.img of=/dev/sdX status=progress bs=1M"
-	echo
-	echo
-	echo "Currently host system has the following block devices which could be used for writing image."
-	echo
-	lsblk
+		*)
+			echo "Unknown image type: ${IMAGE_TYPE}"
+			exit -1
+	esac
 
 }
 
@@ -583,6 +656,11 @@ while [[ "$#" -gt 0 ]]; do
 			shift 
 		;;
 
+		"--image_type")
+			IMAGE_TYPE=${2}
+			shift 
+		;;
+
 		"--configuration")
 			CONFIGURATION=`realpath ${2}`
 			shift
@@ -653,6 +731,7 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 echo "TASK: ${TASK}"
+echo "IMAGE_TYPE: ${IMAGE_TYPE}"
 echo "CONFIGURATION: ${CONFIGURATION}"
 echo "DESTINATION: ${DESTINATION}"
 
