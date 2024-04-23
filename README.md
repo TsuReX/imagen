@@ -96,7 +96,7 @@ The following files are generated during buildroot building process for ATB-RK35
 `atb-rk3568j-smc-r1.dtb`  
 `rootfs.cpio.gz`  
 
-##### To create image for ATB-RK3568J-SMC-R1 board it needs to do the following steps: 
+##### To create image for ATB-RK3568J-SMC-R1 board it needs to do the following steps:  
 0. make preparations  
 ```shell
 sudo apt install -y u-boot-tools libconfuse-dev wget git make gcc u-boot-tools unzip autoconf pkg-config libconfuse-dev mtools swig
@@ -110,7 +110,7 @@ sudo make install
  
 1. obtain building system  
 ```shell
-git clone https://git1.atb-e.ru/cpu_soft/build_systems/imagen.git --branch=r0.0 imagen
+git clone https://git1.atb-e.ru/cpu_soft/build_systems/imagen.git --branch=r0.1 imagen
 ```
 
 2. go into directory  
@@ -131,7 +131,7 @@ or download from yandex.disk
 
 4. obtain buildroot  
 ```shell
-git clone https://git1.atb-e.ru/cpu_soft/build_systems/atb-buildroot-main.git --branch=develop buildroot
+git clone https://git1.atb-e.ru/cpu_soft/build_systems/atb-buildroot-main.git --branch=0b321b77aeaab2303ef619ba0ef8513df2e77ec1 buildroot
 ```
 
 5. go into directory  
