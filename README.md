@@ -157,7 +157,7 @@ cd ..
 
 9. create image for SD  
 ```shell
-./imagen.sh --task create --image_type full --configuration atb_rk3568j_smc_r1_linux-5.10.110_debian12_lxqt/atb_rk3568j_smc_r1_linux-5.10.110_debian12_lxqt.cfg --image_type full
+./imagen.sh --task create --image_type full --configuration atb_rk3568j_smc_r1/linux-5.10.110_debian12_lxqt.cfg --image_type full
 ```
 
 10. create image   
