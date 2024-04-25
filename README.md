@@ -99,7 +99,7 @@ The following files are generated during buildroot building process for ATB-RK35
 ##### To create image for ATB-RK3568J-SMC-R1 board it needs to do the following steps:  
 0. make preparations  
 ```shell
-sudo apt install -y u-boot-tools libconfuse-dev wget git make gcc u-boot-tools unzip autoconf pkg-config libconfuse-dev mtools swig
+sudo apt install -y wget git make gcc u-boot-tools unzip autoconf pkg-config libconfuse-dev mtools swig
 git clone https://github.com/pengutronix/genimage.git --depth=1 --branch=v17
 cd genimage
 ./autogen.sh
@@ -110,7 +110,7 @@ sudo make install
  
 1. obtain building system  
 ```shell
-git clone https://git1.atb-e.ru/cpu_soft/build_systems/imagen.git --branch=r0.1 imagen
+git clone https://git1.atb-e.ru/cpu_soft/build_systems/imagen.git --branch=r0.2 imagen
 ```
 
 2. go into directory  
@@ -124,14 +124,14 @@ mkdir dl ftp_dl
 curlftpfs -o user="atbftp_user:32Vj_hy%c@gR" ftp.atb-e.ru:2121/ATB_FTP/buildroot/dl ftp_dl
 cp -r ./ftp_dl/* ./dl
 sudo umount ftp_dl
-rm -rf ./ftp_dl`  
+rm -rf ./ftp_dl  
 ```
 or download from yandex.disk  
 `https://disk.yandex.ru/d/LATMTVkmq60rCQ`
 
 4. obtain buildroot  
 ```shell
-git clone https://git1.atb-e.ru/cpu_soft/build_systems/atb-buildroot-main.git --branch=0b321b77aeaab2303ef619ba0ef8513df2e77ec1 buildroot
+git clone https://git1.atb-e.ru/cpu_soft/build_systems/atb-buildroot-main.git --branch=dr2 buildroot
 ```
 
 5. go into directory  
@@ -157,10 +157,10 @@ cd ..
 
 9. create image for SD  
 ```shell
-./imagen.sh --task create --image_type full --configuration atb_rk3568j_smc_r1/linux-5.10.110_debian12_lxqt.cfg --image_type full
+./imagen.sh --task create --image_type full --configuration atb_rk3568j_smc_r1/linux-5.10.110_debian12_lxqt.cfg
 ```
 
 10. create image   
 ```shell
-sudo dd if=atb_rk3568j_smc_r1_linux-5_tmp/atb_rk3568j_smc_r1_linux-5_usd.img of=/dev/sdX status=progress bs=1M
+sudo dd if=linux-5_tmp/linux-5_usd.img of=/dev/sdX status=progress bs=1M; sync
 ```
