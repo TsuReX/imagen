@@ -99,7 +99,7 @@ The following files are generated during buildroot building process for ATB-RK35
 ##### To create image for ATB-RK3568J-SMC-R1 board it needs to do the following steps:  
 0. make preparations  
 ```shell
-sudo apt install -y wget git make gcc u-boot-tools unzip autoconf pkg-config libconfuse-dev mtools swig
+sudo apt install -y u-boot-tools libconfuse-dev wget git make gcc g++ unzip autoconf pkg-config libconfuse-dev mtools python2
 git clone https://github.com/pengutronix/genimage.git --depth=1 --branch=v17
 cd genimage
 ./autogen.sh
