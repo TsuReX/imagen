@@ -1,11 +1,10 @@
 ## Introduction
 This document describes how to create image for ATB-RK3568J-SMC-R1 board. The following instructions are designed to work on Ubuntu systems.
 
-{{< panel header="**Note**" header-bg="blue" >}}
-You are free to try it on any other Linux distribution, but you won't get any support in this case.
-{{< /panel >}}
+> **You are free to try it on any other Linux distribution, but you won't get any support in this case.** 
 
-### Prerequisites
+> **In order to get support please build on Ubuntu system**
+## Prerequisites
 In order to successfully build image for ATB-RK3568J-SMC-R1 board you need to install following dependencies:
 ```shell
 sudo apt update
@@ -18,7 +17,6 @@ make
 sudo make install
 ```
 ## ATB-RK3568J-SMC-R1 image creation instruction  
-
 1. Obtain building system  
 ```shell
 git clone https://git1.atb-e.ru/cpu_soft/build_systems/imagen.git --branch=r0.2 imagen
@@ -29,7 +27,9 @@ git clone https://git1.atb-e.ru/cpu_soft/build_systems/imagen.git --branch=r0.2 
 cd imagen
 ```
 
-3. Obtain additional files for build through ftp.
+3. Download additional files for build. For this you have following options:
+
+- Via ftp:
 ```shell
 mkdir dl ftp_dl
 curlftpfs -o user="atbftp_user:32Vj_hy%c@gR" ftp.atb-e.ru:2121/ATB_FTP/buildroot/dl ftp_dl
@@ -37,12 +37,11 @@ cp -r ./ftp_dl/* ./dl
 sudo umount ftp_dl
 rm -rf ./ftp_dl  
 ```
-> Or download from files from yandex.disk via following link: <https://disk.yandex.ru/d/LATMTVkmq60rCQ>
+- Via following link: <https://disk.yandex.ru/d/LATMTVkmq60rCQ>
 
-{{< panel header="**Warning**" header-bg="warning" >}}
-dl folder **must** reside in imagen directory!
-In case you want to place it somewhere else, you should create symlink in imagen directory.
-{{< /panel >}}
+>**dl folder **must** reside in imagen directory!**
+
+>**In case you want to place it somewhere else, you should create symlink in imagen directory.**
 
 4. Obtain buildroot  
 ```shell
